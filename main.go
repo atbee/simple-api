@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -14,11 +16,25 @@ func helloWorld(w http.ResponseWriter, r *http.Request) {
 func helloSomeone(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.Header().Set("Allow", http.MethodPost)
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
-	w.Write([]byte("Create a new ..."))
+	var b map[string]interface{}
+	err := json.NewDecoder(r.Body).Decode(&b)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var name interface{}
+	if name = b["name"]; name == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	message := fmt.Sprintf("Hello, %v!", name)
+	w.Write([]byte(message))
 }
 
 func main() {
