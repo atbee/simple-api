@@ -13,7 +13,7 @@ func hello(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", hello)
+	http.HandleFunc("/get", hello)
 
 	log.Fatal(http.ListenAndServe(PORT, nil))
 }
