@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 )
@@ -9,11 +8,13 @@ import (
 const PORT = ":8000"
 
 func hello(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, World!")
+	w.Write([]byte("Hello, World!"))
 }
 
 func main() {
-	http.HandleFunc("/get", hello)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", hello)
 
-	log.Fatal(http.ListenAndServe(PORT, nil))
+	log.Println("Starting server on", PORT)
+	log.Fatal(http.ListenAndServe(PORT, mux))
 }
